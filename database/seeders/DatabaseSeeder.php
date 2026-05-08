@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -15,11 +17,24 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
+        // Create admin user
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'Admin User',
+            'email' => 'admin@example.com',
+            'role' => 'admin',
         ]);
+
+        // Create guest user
+        User::factory()->create([
+            'name' => 'Guest User',
+            'email' => 'guest@example.com',
+            'role' => 'guest',
+        ]);
+
+        // Create categories
+        Category::factory(5)->create();
+
+        // Create products
+        Product::factory(20)->create();
     }
 }

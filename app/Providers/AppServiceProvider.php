@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -13,8 +14,6 @@ class AppServiceProvider extends ServiceProvider
     {
         //
     }
-
-use Illuminate\Support\Facades\Gate;
 
     /**
      * Bootstrap any application services.
