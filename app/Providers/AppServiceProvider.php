@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * Register any application services.
+     */
+    public function register(): void
+    {
+        //
+    }
+
+use Illuminate\Support\Facades\Gate;
+
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+        Gate::define('admin', function ($user) {
+            return $user->role === 'admin';
+        });
+
+        Gate::define('guest', function ($user) {
+            return $user->role === 'guest';
+        });
+    }
+}
