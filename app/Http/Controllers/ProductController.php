@@ -8,84 +8,75 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    // 1. Menampilkan semua data produk di tabel (Untuk Admin)
     public function index()
     {
-        $products = Product::with('category')->get();
+        // Memanggil produk beserta nama kategorinya agar tidak memberatkan database
+        $products = Product::with('category')->latest()->paginate(10);
         return view('products.index', compact('products'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    // 2. Menampilkan halaman form tambah produk
     public function create()
     {
+        // Kita butuh data kategori untuk ditampilkan di dropdown form
         $categories = Category::all();
         return view('products.create', compact('categories'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // 3. Menyimpan data dari form ke database
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
+        // Ini fitur andalanmu: Validasi! 
+        // Memastikan tidak ada data kosong atau salah ketik yang masuk ke database
+        $validated = $request->validate([
             'category_id' => 'required|exists:categories,id',
+            'name'        => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'stock'       => 'required|integer|min:0', // Stok tidak boleh minus
+            'price'       => 'required|numeric|min:0', // Harga harus angka
         ]);
 
-        Product::create($request->all());
+        Product::create($validated);
 
-        return redirect()->route('products.index')->with('success', 'Product created successfully.');
+        return redirect()->route('products.index')->with('success', 'Produk berhasil ditambahkan ke etalase AnoShop!');
     }
 
-    /**
-     * Display the specified resource.
-     */
+    // 4. Menampilkan detail satu produk
     public function show(Product $product)
     {
+        $product->load('category');
         return view('products.show', compact('product'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+    // 5. Menampilkan halaman form edit produk
     public function edit(Product $product)
     {
         $categories = Category::all();
         return view('products.edit', compact('product', 'categories'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    // 6. Menyimpan perubahan data (Update)
     public function update(Request $request, Product $product)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
+        $validated = $request->validate([
             'category_id' => 'required|exists:categories,id',
+            'name'        => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'stock'       => 'required|integer|min:0',
+            'price'       => 'required|numeric|min:0',
         ]);
 
-        $product->update($request->all());
+        $product->update($validated);
 
-        return redirect()->route('products.index')->with('success', 'Product updated successfully.');
+        return redirect()->route('products.index')->with('success', 'Data produk AnoShop berhasil diperbarui!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    // 7. Menghapus data dari database
     public function destroy(Product $product)
     {
         $product->delete();
-
-        return redirect()->route('products.index')->with('success', 'Product deleted successfully.');
+        
+        return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus dari sistem AnoShop.');
     }
 }
