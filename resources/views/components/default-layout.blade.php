@@ -31,13 +31,18 @@
 
                         <!-- Search Bar -->
                         <div class="hidden md:flex flex-1 mx-8">
-                            <form class="w-full relative">
+                            <form action="{{ route('products.public.index') }}" method="GET" class="w-full relative">
+                                @if(request('category'))
+                                    <input type="hidden" name="category" value="{{ request('category') }}">
+                                @endif
                                 <input 
                                     type="text" 
+                                    name="search"
+                                    value="{{ request('search') }}"
                                     placeholder="Cari produk..." 
                                     class="w-full px-4 py-2 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 >
-                                <button type="submit" class="absolute right-3 top-2.5 text-gray-400">
+                                <button type="submit" class="absolute right-3 top-2.5 text-gray-400 hover:text-blue-600 transition">
                                     <i class="ph ph-magnifying-glass text-xl"></i>
                                 </button>
                             </form>
@@ -45,13 +50,23 @@
 
                         <!-- Right Menu -->
                         <div class="flex items-center gap-4">
-                            <a href="#" class="relative text-gray-600 hover:text-gray-900">
+                            <a href="/wishlist" class="relative text-gray-600 hover:text-red-500 transition">
                                 <i class="ph ph-heart text-2xl"></i>
-                                <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                                @auth
+                                    @php $wishlistCount = Auth::user()->wishlists()->count(); @endphp
+                                    @if($wishlistCount > 0)
+                                        <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{{ $wishlistCount }}</span>
+                                    @endif
+                                @endauth
                             </a>
-                            <a href="#" class="relative text-gray-600 hover:text-gray-900">
+                            <a href="/cart" class="relative text-gray-600 hover:text-blue-600 transition">
                                 <i class="ph ph-shopping-cart text-2xl"></i>
-                                <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                                @auth
+                                    @php $cartCount = Auth::user()->carts()->sum('quantity'); @endphp
+                                    @if($cartCount > 0)
+                                        <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{{ $cartCount }}</span>
+                                    @endif
+                                @endauth
                             </a>
                             @auth
                                 <div class="relative group">

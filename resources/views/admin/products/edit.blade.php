@@ -4,13 +4,13 @@
     </x-slot>
 
     <div class="mb-6">
-        <a href="/admin/products" class="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold">
+        <a href="{{ route('products.index') }}" class="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold">
             <i class="ph ph-caret-left"></i>
             Kembali ke Daftar Produk
         </a>
     </div>
 
-    <form method="POST" action="/admin/products/1" class="space-y-6">
+    <form method="POST" action="{{ route('products.update', $product->id) }}" enctype="multipart/form-data" class="space-y-6">
         @csrf
         @method('PUT')
 
@@ -32,7 +32,7 @@
                         <input 
                             type="text" 
                             name="name"
-                            value="Produk Berkualitas Pilihan"
+                            value="{{ old('name', $product->name) }}"
                             placeholder="Masukkan nama produk" 
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
@@ -53,7 +53,7 @@
                         <input 
                             type="text" 
                             name="sku"
-                            value="SKU-001"
+                            value="{{ old('sku', $product->sku) }}"
                             placeholder="Misal: SKU-001" 
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
@@ -77,7 +77,7 @@
                             rows="6"
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
-                        >Ini adalah produk berkualitas tinggi dengan fitur-fitur unggulan yang sempurna untuk kebutuhan Anda.</textarea>
+                        >{{ old('description', $product->description) }}</textarea>
                         @error('description')
                             <div class="flex items-center gap-2 mt-2 text-red-600 text-sm">
                                 <i class="ph ph-warning-circle"></i>
@@ -106,7 +106,7 @@
                                 <input 
                                     type="number" 
                                     name="price"
-                                    value="250000"
+                                    value="{{ old('price', (int)$product->price) }}"
                                     placeholder="0" 
                                     class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     required
@@ -130,7 +130,7 @@
                                 <input 
                                     type="number" 
                                     name="cost_price"
-                                    value="150000"
+                                    value="{{ old('cost_price', (int)$product->cost_price) }}"
                                     placeholder="0" 
                                     class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 >
@@ -145,7 +145,7 @@
                             <input 
                                 type="number" 
                                 name="stock"
-                                value="125"
+                                value="{{ old('stock', $product->stock) }}"
                                 placeholder="0" 
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 required
@@ -166,7 +166,7 @@
                             <input 
                                 type="number" 
                                 name="min_stock"
-                                value="10"
+                                value="{{ old('min_stock', $product->min_stock) }}"
                                 placeholder="10" 
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
@@ -260,10 +260,9 @@
                         </label>
                         <select name="category_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                             <option value="">-- Pilih Kategori --</option>
-                            <option value="1" selected>Fashion</option>
-                            <option value="2">Elektronik</option>
-                            <option value="3">Buku</option>
-                            <option value="4">Rumah & Taman</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                            @endforeach
                         </select>
                         @error('category_id')
                             <div class="flex items-center gap-2 mt-2 text-red-600 text-sm">
@@ -308,7 +307,7 @@
                         <input 
                             type="number" 
                             name="weight"
-                            value="500"
+                            value="{{ old('weight', (int)$product->weight) }}"
                             placeholder="0" 
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
@@ -323,21 +322,21 @@
                             <input 
                                 type="number" 
                                 name="length"
-                                value="20"
+                                value="{{ old('length', (int)$product->length) }}"
                                 placeholder="Panjang" 
                                 class="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                             <input 
                                 type="number" 
                                 name="width"
-                                value="15"
+                                value="{{ old('width', (int)$product->width) }}"
                                 placeholder="Lebar" 
                                 class="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                             <input 
                                 type="number" 
                                 name="height"
-                                value="10"
+                                value="{{ old('height', (int)$product->height) }}"
                                 placeholder="Tinggi" 
                                 class="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
@@ -384,7 +383,7 @@
                 <i class="ph ph-check-circle"></i>
                 Simpan Perubahan
             </button>
-            <a href="/admin/products" class="flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 font-semibold">
+            <a href="{{ route('products.index') }}" class="flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 font-semibold">
                 <i class="ph ph-x"></i>
                 Batal
             </a>

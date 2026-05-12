@@ -17,17 +17,23 @@
             <div>
                 <!-- Main Image -->
                 <div class="bg-gray-200 rounded-lg overflow-hidden mb-4 aspect-square flex items-center justify-center">
-                    <i class="ph ph-image text-8xl text-gray-400"></i>
+                    @if($product->main_image)
+                        <img src="{{ Storage::url($product->main_image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
+                    @else
+                        <img src="https://picsum.photos/seed/{{ $product->id }}/800/800" alt="{{ $product->name }}" class="w-full h-full object-cover">
+                    @endif
                 </div>
 
                 <!-- Gallery -->
+                @if($product->gallery_images)
                 <div class="grid grid-cols-4 gap-2">
-                    @foreach(range(1, 4) as $i)
-                        <button class="bg-gray-200 rounded-lg aspect-square flex items-center justify-center hover:ring-2 hover:ring-blue-600 transition {{ $i === 1 ? 'ring-2 ring-blue-600' : '' }}">
-                            <i class="ph ph-image text-xl text-gray-400"></i>
+                    @foreach($product->gallery_images as $image)
+                        <button class="bg-gray-200 rounded-lg aspect-square flex items-center justify-center hover:ring-2 hover:ring-blue-600 transition overflow-hidden">
+                            <img src="{{ Storage::url($image) }}" alt="Gallery" class="w-full h-full object-cover">
                         </button>
                     @endforeach
                 </div>
+                @endif
             </div>
 
             <!-- Product Info -->
@@ -35,16 +41,16 @@
                 <!-- Category Badge -->
                 <div class="flex items-center gap-2 mb-3">
                     <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">
-                        Fashion
+                        {{ $product->category->name ?? 'Tanpa Kategori' }}
                     </span>
                     <span class="bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1">
-                        <i class="ph ph-check-circle"></i> Terjual 4525
+                        <i class="ph ph-check-circle"></i> Terjual 0
                     </span>
                 </div>
 
                 <!-- Product Title -->
                 <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-                    Produk Berkualitas Pilihan Premium
+                    {{ $product->name }}
                 </h1>
 
                 <!-- Rating & Reviews -->
@@ -64,26 +70,17 @@
                 <!-- Price -->
                 <div class="mb-6 pb-6 border-b border-gray-200">
                     <div class="flex items-baseline gap-3 mb-2">
-                        <span class="text-4xl font-bold text-gray-900">Rp 250.000</span>
-                        <span class="text-xl text-gray-500 line-through">Rp 350.000</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="bg-red-100 text-red-700 font-bold px-3 py-1 rounded">
-                            Hemat 28%
-                        </span>
-                        <span class="text-sm text-gray-600">
-                            Harga spesial untuk Anda
-                        </span>
+                        <span class="text-4xl font-bold text-gray-900">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
+                        @if($product->cost_price && $product->cost_price > $product->price)
+                        <span class="text-xl text-gray-500 line-through">Rp {{ number_format($product->cost_price, 0, ',', '.') }}</span>
+                        @endif
                     </div>
                 </div>
 
                 <!-- Description -->
                 <div class="mb-6">
                     <h3 class="text-lg font-bold text-gray-900 mb-3">Deskripsi Produk</h3>
-                    <p class="text-gray-700 leading-relaxed">
-                        Produk berkualitas tinggi dengan desain modern dan tahan lama. Cocok untuk penggunaan sehari-hari dengan performa maksimal. 
-                        Diproduksi dengan standar internasional dan telah lulus berbagai test quality control.
-                    </p>
+                    <p class="text-gray-700 leading-relaxed whitespace-pre-wrap">{{ $product->description }}</p>
                 </div>
 
                 <!-- Specifications -->
@@ -91,24 +88,18 @@
                     <h3 class="text-lg font-bold text-gray-900 mb-4">Spesifikasi</h3>
                     <div class="space-y-3 text-sm">
                         <div class="flex gap-4">
+                            <span class="text-gray-600 w-24">SKU:</span>
+                            <span class="text-gray-900 font-semibold">{{ $product->sku ?? '-' }}</span>
+                        </div>
+                        <div class="flex gap-4">
                             <span class="text-gray-600 w-24">Berat:</span>
-                            <span class="text-gray-900 font-semibold">500 gram</span>
+                            <span class="text-gray-900 font-semibold">{{ $product->weight ? $product->weight . ' gram' : '-' }}</span>
                         </div>
                         <div class="flex gap-4">
                             <span class="text-gray-600 w-24">Dimensi:</span>
-                            <span class="text-gray-900 font-semibold">20 x 15 x 10 cm</span>
-                        </div>
-                        <div class="flex gap-4">
-                            <span class="text-gray-600 w-24">Material:</span>
-                            <span class="text-gray-900 font-semibold">Polyester Premium</span>
-                        </div>
-                        <div class="flex gap-4">
-                            <span class="text-gray-600 w-24">Warna:</span>
-                            <span class="text-gray-900 font-semibold">Black, Navy, White</span>
-                        </div>
-                        <div class="flex gap-4">
-                            <span class="text-gray-600 w-24">Garansi:</span>
-                            <span class="text-gray-900 font-semibold">1 Tahun</span>
+                            <span class="text-gray-900 font-semibold">
+                                {{ $product->length ?? '-' }} x {{ $product->width ?? '-' }} x {{ $product->height ?? '-' }} cm
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -117,9 +108,10 @@
                 <div class="mb-6 pb-6 border-b border-gray-200">
                     <div class="flex items-center gap-3">
                         @php
-                            $stock = 45;
+                            $stock = $product->stock;
+                            $minStock = $product->min_stock ?? 10;
                         @endphp
-                        @if($stock > 10)
+                        @if($stock > $minStock)
                             <div class="w-3 h-3 bg-green-500 rounded-full"></div>
                             <span class="text-green-700 font-semibold">Stok Tersedia ({{ $stock }} pcs)</span>
                         @elseif($stock > 0)
@@ -140,11 +132,11 @@
                             Jumlah
                         </label>
                         <div class="flex items-center gap-3 bg-gray-100 rounded-lg w-fit">
-                            <button class="px-3 py-2 text-gray-600 hover:text-gray-900">
+                            <button type="button" onclick="document.getElementById('qty').stepDown()" class="px-3 py-2 text-gray-600 hover:text-gray-900">
                                 <i class="ph ph-minus"></i>
                             </button>
-                            <input type="number" value="1" min="1" class="w-16 text-center bg-transparent outline-none font-semibold text-gray-900">
-                            <button class="px-3 py-2 text-gray-600 hover:text-gray-900">
+                            <input type="number" id="qty" name="quantity" value="1" min="1" max="{{ $product->stock }}" class="w-16 text-center bg-transparent outline-none font-semibold text-gray-900" form="add-to-cart-form">
+                            <button type="button" onclick="document.getElementById('qty').stepUp()" class="px-3 py-2 text-gray-600 hover:text-gray-900">
                                 <i class="ph ph-plus"></i>
                             </button>
                         </div>
@@ -153,14 +145,32 @@
 
                 <!-- Action Buttons -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
-                    <button class="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition">
-                        <i class="ph ph-shopping-cart-fill text-xl"></i>
-                        Tambah ke Keranjang
-                    </button>
-                    <button class="flex items-center justify-center gap-2 px-6 py-3 border-2 border-blue-600 text-blue-600 font-bold rounded-lg hover:bg-blue-50 transition">
-                        <i class="ph ph-heart-fill text-xl"></i>
-                        Wishlist
-                    </button>
+                    <form action="{{ route('cart.store') }}" method="POST" id="add-to-cart-form">
+                        @csrf
+                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                        <!-- quantity input is linked via form="add-to-cart-form" attribute -->
+                        <button type="submit" class="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition">
+                            <i class="ph ph-shopping-cart-fill text-xl"></i>
+                            Tambah ke Keranjang
+                        </button>
+                    </form>
+                    
+                    <form action="{{ route('wishlist.toggle') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                        <button type="submit" class="w-full flex items-center justify-center gap-2 px-6 py-3 border-2 border-blue-600 text-blue-600 font-bold rounded-lg hover:bg-blue-50 transition">
+                            @php
+                                $inWishlist = auth()->check() && auth()->user()->wishlists()->where('product_id', $product->id)->exists();
+                            @endphp
+                            @if($inWishlist)
+                                <i class="ph-fill ph-heart text-xl text-red-500"></i>
+                                Hapus dari Wishlist
+                            @else
+                                <i class="ph ph-heart-fill text-xl"></i>
+                                Tambah Wishlist
+                            @endif
+                        </button>
+                    </form>
                 </div>
 
                 <!-- Seller Info -->

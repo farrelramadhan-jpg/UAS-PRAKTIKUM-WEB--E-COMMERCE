@@ -4,13 +4,13 @@
     </x-slot>
 
     <div class="mb-6">
-        <a href="/admin/products" class="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold">
+        <a href="{{ route('products.index') }}" class="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold">
             <i class="ph ph-caret-left"></i>
             Kembali ke Daftar Produk
         </a>
     </div>
 
-    <form method="POST" action="/admin/products" class="space-y-6">
+    <form method="POST" action="{{ route('products.store') }}" enctype="multipart/form-data" class="space-y-6">
         @csrf
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -224,10 +224,9 @@
                         </label>
                         <select name="category_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                             <option value="">-- Pilih Kategori --</option>
-                            <option value="1">Fashion</option>
-                            <option value="2">Elektronik</option>
-                            <option value="3">Buku</option>
-                            <option value="4">Rumah & Taman</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                            @endforeach
                         </select>
                         @error('category_id')
                             <div class="flex items-center gap-2 mt-2 text-red-600 text-sm">
@@ -332,7 +331,7 @@
                 <i class="ph ph-check-circle"></i>
                 Simpan Produk
             </button>
-            <a href="/admin/products" class="flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 font-semibold">
+            <a href="{{ route('products.index') }}" class="flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 font-semibold">
                 <i class="ph ph-x"></i>
                 Batal
             </a>

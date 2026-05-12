@@ -12,7 +12,7 @@
                 </h1>
                 <p class="text-gray-600 text-sm mt-1">Kelola dan pantau semua produk di toko Anda</p>
             </div>
-            <a href="/admin/products/create" class="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-semibold">
+            <a href="{{ route('products.create') }}" class="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-semibold">
                 <i class="ph ph-plus-circle"></i>
                 Tambah Produk
             </a>
@@ -121,46 +121,43 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach(range(1, 10) as $product)
+                    @foreach($products as $product)
                         <tr class="border-b border-gray-200 hover:bg-gray-50 transition">
                             <td class="px-6 py-4 text-sm">
                                 <input type="checkbox" class="rounded">
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
-                                        <i class="ph ph-image text-gray-400"></i>
+                                    <div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center overflow-hidden">
+                                        @if($product->main_image)
+                                            <img src="{{ Storage::url($product->main_image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
+                                        @else
+                                            <i class="ph ph-image text-gray-400"></i>
+                                        @endif
                                     </div>
                                     <div>
-                                        <p class="font-semibold text-gray-900 text-sm">Produk {{ $product }}</p>
-                                        <p class="text-xs text-gray-500">SKU-00{{ $product }}</p>
+                                        <p class="font-semibold text-gray-900 text-sm">{{ $product->name }}</p>
+                                        <p class="text-xs text-gray-500">{{ $product->sku }}</p>
                                     </div>
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-700">
-                                @if($product % 3 === 0)
-                                    Fashion
-                                @elseif($product % 3 === 1)
-                                    Elektronik
-                                @else
-                                    Buku
-                                @endif
+                                {{ $product->category->name ?? 'Tanpa Kategori' }}
                             </td>
                             <td class="px-6 py-4 text-sm font-semibold text-gray-900">
-                                Rp {{ number_format(rand(50000, 500000), 0, ',', '.') }}
+                                Rp {{ number_format($product->price, 0, ',', '.') }}
                             </td>
                             <td class="px-6 py-4 text-sm">
                                 @php
-                                    $stok = rand(0, 150);
-                                    $stokClass = $stok < 10 ? 'text-red-600' : ($stok < 50 ? 'text-yellow-600' : 'text-green-600');
+                                    $stokClass = $product->stock < ($product->min_stock ?? 10) ? 'text-red-600' : ($product->stock < 50 ? 'text-yellow-600' : 'text-green-600');
                                 @endphp
-                                <span class="{{ $stokClass }} font-semibold">{{ $stok }} pcs</span>
+                                <span class="{{ $stokClass }} font-semibold">{{ $product->stock }} pcs</span>
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-700">
-                                {{ rand(10, 500) }} pcs
+                                0 pcs
                             </td>
                             <td class="px-6 py-4">
-                                @if($product % 2 === 0)
+                                @if($product->is_active)
                                     <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
                                         <i class="ph ph-check-circle"></i> Aktif
                                     </span>
@@ -172,15 +169,19 @@
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-2">
-                                    <a href="/admin/products/{{ $product }}" class="text-blue-600 hover:text-blue-700 p-2 hover:bg-blue-50 rounded transition" title="Detail">
+                                    <a href="{{ route('products.show', $product->id) }}" class="text-blue-600 hover:text-blue-700 p-2 hover:bg-blue-50 rounded transition" title="Detail">
                                         <i class="ph ph-eye"></i>
                                     </a>
-                                    <a href="/admin/products/{{ $product }}/edit" class="text-orange-600 hover:text-orange-700 p-2 hover:bg-orange-50 rounded transition" title="Edit">
+                                    <a href="{{ route('products.edit', $product->id) }}" class="text-orange-600 hover:text-orange-700 p-2 hover:bg-orange-50 rounded transition" title="Edit">
                                         <i class="ph ph-pencil"></i>
                                     </a>
-                                    <button class="text-red-600 hover:text-red-700 p-2 hover:bg-red-50 rounded transition" title="Hapus">
-                                        <i class="ph ph-trash"></i>
-                                    </button>
+                                    <form action="{{ route('products.destroy', $product->id) }}" method="POST" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:text-red-700 p-2 hover:bg-red-50 rounded transition" title="Hapus" onclick="return confirm('Yakin ingin menghapus produk ini?')">
+                                            <i class="ph ph-trash"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
@@ -190,24 +191,8 @@
         </div>
 
         <!-- Pagination -->
-        <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between items-center">
-            <div class="text-sm text-gray-600">
-                Menampilkan <span class="font-semibold">1-10</span> dari <span class="font-semibold">1,234</span> produk
-            </div>
-            <div class="flex gap-2">
-                <button class="px-3 py-1 border border-gray-300 rounded text-gray-600 hover:bg-gray-100 disabled:opacity-50" disabled>
-                    <i class="ph ph-caret-left"></i>
-                </button>
-                @for($i = 1; $i <= 3; $i++)
-                    <button class="px-3 py-1 rounded {{ $i === 1 ? 'bg-blue-600 text-white' : 'border border-gray-300 text-gray-600 hover:bg-gray-100' }}">
-                        {{ $i }}
-                    </button>
-                @endfor
-                <span class="px-3 py-1">...</span>
-                <button class="px-3 py-1 border border-gray-300 rounded text-gray-600 hover:bg-gray-100">
-                    <i class="ph ph-caret-right"></i>
-                </button>
-            </div>
+        <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+            {{ $products->links() }}
         </div>
     </div>
 

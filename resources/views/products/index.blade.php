@@ -23,21 +23,14 @@
     <section class="bg-white border-b border-gray-200 sticky top-16 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div class="flex gap-4 overflow-x-auto pb-2">
-                <a href="#" class="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 text-blue-600 font-semibold whitespace-nowrap hover:bg-blue-200">
+                <a href="{{ route('products.public.index') }}" class="flex items-center gap-2 px-4 py-2 rounded-full {{ !request('category') ? 'bg-blue-100 text-blue-600 font-semibold' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }} whitespace-nowrap">
                     <i class="ph ph-list"></i> Semua Produk
                 </a>
-                <a href="#" class="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 text-gray-600 whitespace-nowrap hover:bg-gray-200">
-                    <i class="ph ph-shirt"></i> Fashion
+                @foreach($categories as $category)
+                <a href="{{ route('products.public.index', ['category' => $category->id]) }}" class="flex items-center gap-2 px-4 py-2 rounded-full {{ request('category') == $category->id ? 'bg-blue-100 text-blue-600 font-semibold' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }} whitespace-nowrap">
+                    {{ $category->name }}
                 </a>
-                <a href="#" class="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 text-gray-600 whitespace-nowrap hover:bg-gray-200">
-                    <i class="ph ph-laptop"></i> Elektronik
-                </a>
-                <a href="#" class="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 text-gray-600 whitespace-nowrap hover:bg-gray-200">
-                    <i class="ph ph-book"></i> Buku
-                </a>
-                <a href="#" class="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 text-gray-600 whitespace-nowrap hover:bg-gray-200">
-                    <i class="ph ph-plant"></i> Rumah & Taman
-                </a>
+                @endforeach
             </div>
         </div>
     </section>
@@ -80,20 +73,37 @@
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            @foreach(range(1, 12) as $product)
+            @foreach($products as $product)
                 <div class="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden group">
                     <!-- Image -->
                     <div class="relative bg-gray-200 h-48 overflow-hidden">
-                        <div class="w-full h-full flex items-center justify-center text-gray-400">
-                            <i class="ph ph-image text-6xl"></i>
-                        </div>
-                        <button class="absolute top-2 right-2 bg-white rounded-full p-2 hover:bg-gray-100 shadow">
-                            <i class="ph ph-heart text-xl text-gray-600"></i>
-                        </button>
-                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/30 to-transparent p-3 opacity-0 group-hover:opacity-100 transition">
-                            <button class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2">
-                                <i class="ph ph-shopping-cart"></i> Beli
+                        @if($product->main_image)
+                            <img src="{{ Storage::url($product->main_image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
+                        @else
+                            <img src="https://picsum.photos/seed/{{ $product->id }}/400/400" alt="{{ $product->name }}" class="w-full h-full object-cover">
+                        @endif
+                        <form action="{{ route('wishlist.toggle') }}" method="POST" class="absolute top-2 right-2 z-10">
+                            @csrf
+                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+                            <button type="submit" class="bg-white rounded-full p-2 hover:bg-gray-100 shadow transition group/btn">
+                                @php
+                                    $inWishlist = auth()->check() && auth()->user()->wishlists()->where('product_id', $product->id)->exists();
+                                @endphp
+                                @if($inWishlist)
+                                <i class="ph-fill ph-heart text-xl text-red-500"></i>
+                                @else
+                                <i class="ph ph-heart text-xl text-gray-600 group-hover/btn:text-red-500"></i>
+                                @endif
                             </button>
+                        </form>
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent p-3 opacity-0 group-hover:opacity-100 transition">
+                            <form action="{{ route('cart.store') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2 shadow-lg">
+                                    <i class="ph ph-shopping-cart"></i> Beli
+                                </button>
+                            </form>
                         </div>
                     </div>
 
@@ -101,14 +111,14 @@
                     <div class="p-4">
                         <!-- Badge -->
                         <div class="flex items-center gap-2 mb-2">
-                            <span class="inline-block bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded">
-                                <i class="ph ph-check-circle"></i> Terjual 4525
+                            <span class="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-1 rounded">
+                                {{ $product->category->name ?? 'Tanpa Kategori' }}
                             </span>
                         </div>
 
                         <!-- Product Name -->
-                        <h3 class="text-sm font-semibold text-gray-900 line-clamp-2 mb-2">
-                            Produk Berkualitas Pilihan {{ $product }}
+                        <h3 class="text-sm font-semibold text-gray-900 line-clamp-2 mb-2" title="{{ $product->name }}">
+                            {{ $product->name }}
                         </h3>
 
                         <!-- Rating -->
@@ -118,17 +128,21 @@
                                     <i class="ph ph-star-fill text-sm"></i>
                                 @endfor
                             </div>
-                            <span class="text-xs text-gray-500">({{ rand(100, 500) }} ulasan)</span>
+                            <span class="text-xs text-gray-500">(0 ulasan)</span>
                         </div>
 
                         <!-- Price -->
                         <div class="mb-3">
-                            <div class="text-xl font-bold text-gray-900">Rp {{ number_format(rand(50000, 500000), 0, ',', '.') }}</div>
-                            <div class="text-sm text-gray-500 line-through">Rp {{ number_format(rand(60000, 600000), 0, ',', '.') }}</div>
+                            <div class="text-xl font-bold text-gray-900">Rp {{ number_format($product->price, 0, ',', '.') }}</div>
+                            @if($product->cost_price && $product->cost_price > $product->price)
+                            <div class="text-sm text-gray-500 line-through">Rp {{ number_format($product->cost_price, 0, ',', '.') }}</div>
+                            @else
+                            <div class="text-sm text-transparent line-through select-none">&nbsp;</div>
+                            @endif
                         </div>
 
                         <!-- View Detail -->
-                        <a href="/products/{{ $product }}" class="block text-center text-blue-600 font-semibold text-sm hover:text-blue-700">
+                        <a href="{{ route('products.public.show', $product->id) }}" class="block text-center text-blue-600 font-semibold text-sm hover:text-blue-700">
                             Lihat Detail →
                         </a>
                     </div>
@@ -137,18 +151,9 @@
         </div>
 
         <!-- Pagination -->
-        <div class="flex justify-center gap-2 mt-12">
-            <button class="px-4 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50" disabled>
-                <i class="ph ph-caret-left"></i>
-            </button>
-            @for($i = 1; $i <= 5; $i++)
-                <button class="px-4 py-2 rounded-lg {{ $i === 1 ? 'bg-blue-600 text-white' : 'border border-gray-300 text-gray-600 hover:bg-gray-100' }}">
-                    {{ $i }}
-                </button>
-            @endfor
-            <button class="px-4 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100">
-                <i class="ph ph-caret-right"></i>
-            </button>
+        <!-- Pagination -->
+        <div class="flex justify-center mt-12 w-full">
+            {{ $products->links() }}
         </div>
     </section>
 </x-default-layout>
