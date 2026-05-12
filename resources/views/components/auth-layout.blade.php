@@ -39,29 +39,24 @@
                         <span>Dashboard</span>
                     </a>
 
-                    <a href="/admin/products" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition {{ request()->is('admin/products*') ? 'bg-blue-600' : '' }}">
-                        <i class="ph ph-package text-xl"></i>
-                        <span>Produk</span>
-                    </a>
-
-                    <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition">
+                    <a href="{{ route('categories.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition {{ request()->is('admin/categories*') ? 'bg-blue-600' : '' }}">
                         <i class="ph ph-list text-xl"></i>
                         <span>Kategori</span>
                     </a>
 
-                    <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition">
+                    <a href="{{ route('orders.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition {{ request()->is('admin/orders*') ? 'bg-blue-600' : '' }}">
                         <i class="ph ph-receipt text-xl"></i>
                         <span>Pesanan</span>
                     </a>
 
-                    <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition">
+                    <a href="{{ route('customers.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition {{ request()->is('admin/customers*') ? 'bg-blue-600' : '' }}">
                         <i class="ph ph-users text-xl"></i>
                         <span>Pelanggan</span>
                     </a>
 
                     <div class="border-t border-gray-700 my-4"></div>
 
-                    <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition">
+                    <a href="{{ route('settings.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition {{ request()->is('admin/settings*') ? 'bg-blue-600' : '' }}">
                         <i class="ph ph-gear text-xl"></i>
                         <span>Pengaturan</span>
                     </a>

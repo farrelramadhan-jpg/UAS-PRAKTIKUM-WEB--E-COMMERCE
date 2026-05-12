@@ -11,12 +11,12 @@ class CategoryController extends Controller
     {
         // Pake pagination agar lebih rapi dan aman untuk data jumlah besar
         $categories = Category::latest()->paginate(10);
-        return view('categories.index', compact('categories'));
+        return view('admin.categories.index', compact('categories'));
     }
 
     public function create()
     {
-        return view('categories.create');
+        return view('admin.categories.create');
     }
 
     public function store(Request $request)
@@ -35,12 +35,12 @@ class CategoryController extends Controller
 
     public function show(Category $category)
     {
-        return view('categories.show', compact('category'));
+        return view('admin.categories.show', compact('category'));
     }
 
     public function edit(Category $category)
     {
-        return view('categories.edit', compact('category'));
+        return view('admin.categories.edit', compact('category'));
     }
 
     public function update(Request $request, Category $category)

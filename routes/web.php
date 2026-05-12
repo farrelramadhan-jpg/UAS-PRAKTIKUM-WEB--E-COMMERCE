@@ -6,13 +6,16 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\SettingController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes for products
 Route::get('/', [PublicProductController::class, 'index'])->name('home');
 Route::get('/products', [PublicProductController::class, 'index'])->name('products.public.index');
 Route::get('/products/{product}', [PublicProductController::class, 'show'])->name('products.public.show');
-
+ 
 // Authenticated Routes
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
@@ -41,6 +44,10 @@ Route::middleware('auth')->group(function () {
 
         Route::resource('products', ProductController::class);
         Route::resource('categories', CategoryController::class);
+        Route::resource('orders', OrderController::class);
+        Route::resource('customers', CustomerController::class);
+        Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+        Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
     });
 });
 
