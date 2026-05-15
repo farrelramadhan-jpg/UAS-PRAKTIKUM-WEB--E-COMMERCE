@@ -11,14 +11,15 @@ class ModeratorCommentController extends Controller
 {
     public function index(Request $request): View
     {
-        $status = $request->get('status', 'pending');
+        $status = $request->query('status', 'all');
 
-        $comments = Comment::with(['user', 'product'])
-            ->when($status !== 'all', function ($query) use ($status) {
-                return $query->where('status', $status);
-            })
-            ->latest()
-            ->paginate(20);
+        $query = Comment::with(['user', 'product']);
+
+        if ($status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        $comments = $query->latest()->paginate(20);
 
         $stats = [
             'pending' => Comment::where('status', 'pending')->count(),

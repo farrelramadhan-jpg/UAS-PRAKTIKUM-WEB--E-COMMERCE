@@ -76,7 +76,7 @@
                                     </button>
                                     <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200">
                                         @if(Auth::user()->role === 'admin')
-                                            <a href="/admin/dashboard" class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                            <a href="{{ route('admin.dashboard.main') }}" class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100">
                                                 <i class="ph ph-house"></i> Admin Panel
                                             </a>
                                         @elseif(Auth::user()->role === 'seller')

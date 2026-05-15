@@ -13,6 +13,8 @@ use App\Http\Controllers\ModeratorController;
 use App\Http\Controllers\ModeratorCommentController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\SellerController;
+use App\Http\Controllers\UserManagementController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes for products
@@ -59,11 +61,12 @@ Route::middleware('auth')->group(function () {
 
     // Seller routes
     Route::prefix('seller')->middleware(['role:seller'])->name('seller.')->group(function () {
-        Route::get('/dashboard', function () {
-            return redirect()->route('seller.products.index');
-        })->name('dashboard');
-
+        Route::get('/dashboard', [SellerController::class, 'dashboard'])->name('dashboard');
         Route::resource('products', ProductController::class);
+        Route::resource('orders', OrderController::class)->only(['index', 'show']);
+        Route::resource('customers', CustomerController::class)->only(['index', 'show']);
+        Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+        Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
     });
 
     // Moderator routes
@@ -80,15 +83,21 @@ Route::middleware('auth')->group(function () {
     });
 
     // Admin routes
-    Route::prefix('admin')->middleware(['role:admin'])->group(function () {
+    Route::prefix('admin')->middleware(['role:admin'])->name('admin.')->group(function () {
         Route::get('/dashboard', function () {
-            return redirect()->route('products.index');
-        })->name('admin.dashboard');
+            return redirect()->route('admin.dashboard.main');
+        })->name('dashboard');
+        
+        Route::get('/dashboard-main', function () {
+            return view('admin.dashboard');
+        })->name('dashboard.main');
 
         Route::resource('products', ProductController::class);
         Route::resource('categories', CategoryController::class);
         Route::resource('orders', OrderController::class);
         Route::resource('customers', CustomerController::class);
+        Route::resource('users', UserManagementController::class)->only(['index', 'destroy']);
+        Route::patch('/users/{user}/role', [UserManagementController::class, 'updateRole'])->name('users.updateRole');
         Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
         Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
     });
