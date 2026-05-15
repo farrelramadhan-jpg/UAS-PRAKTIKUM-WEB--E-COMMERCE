@@ -24,11 +24,25 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin',
         ]);
 
-        // Create guest user
+        // Create moderator user
         User::factory()->create([
-            'name' => 'Guest User',
-            'email' => 'guest@example.com',
-            'role' => 'guest',
+            'name' => 'Moderator User',
+            'email' => 'moderator@example.com',
+            'role' => 'moderator',
+        ]);
+
+        // Create seller user
+        User::factory()->create([
+            'name' => 'Seller User',
+            'email' => 'seller@example.com',
+            'role' => 'seller',
+        ]);
+
+        // Create buyer user
+        User::factory()->create([
+            'name' => 'Buyer User',
+            'email' => 'buyer@example.com',
+            'role' => 'buyer',
         ]);
 
         $categories = [

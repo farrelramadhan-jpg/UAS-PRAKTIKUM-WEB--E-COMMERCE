@@ -79,6 +79,14 @@
                                             <a href="/admin/dashboard" class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100">
                                                 <i class="ph ph-house"></i> Admin Panel
                                             </a>
+                                        @elseif(Auth::user()->role === 'seller')
+                                            <a href="{{ route('seller.dashboard') }}" class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                                <i class="ph ph-storefront"></i> Seller Panel
+                                            </a>
+                                        @elseif(Auth::user()->role === 'moderator')
+                                            <a href="{{ route('moderator.dashboard') }}" class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                                <i class="ph ph-shield-check"></i> Moderator Panel
+                                            </a>
                                         @endif
                                         <a href="/profile" class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 border-t">
                                             <i class="ph ph-user"></i> Profil

@@ -33,7 +33,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-600 text-sm">Aktif Bulan Ini</p>
-                        <p class="text-2xl font-bold text-gray-900">{{ $customers->where('created_at', '>=', now()->startOfMonth())->count() }}</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ $activeThisMonth }}</p>
                     </div>
                     <i class="ph ph-user-check text-4xl text-blue-600 opacity-20"></i>
                 </div>
@@ -42,7 +42,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-600 text-sm">Dengan Pesanan</p>
-                        <p class="text-2xl font-bold text-gray-900">{{ $customers->where('orders_count', '>', 0)->count() }}</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ $customersWithOrders }}</p>
                     </div>
                     <i class="ph ph-shopping-cart text-4xl text-green-600 opacity-20"></i>
                 </div>

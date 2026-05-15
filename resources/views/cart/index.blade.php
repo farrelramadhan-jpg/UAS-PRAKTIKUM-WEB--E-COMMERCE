@@ -69,9 +69,9 @@
                         <span class="text-lg font-bold text-gray-900">Total Tagihan</span>
                         <span class="text-xl font-bold text-blue-600">Rp {{ number_format($total, 0, ',', '.') }}</span>
                     </div>
-                    <button class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition">
+                    <a href="{{ route('checkout.index') }}" class="block w-full text-center bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition">
                         Beli Sekarang ({{ $carts->sum('quantity') }})
-                    </button>
+                    </a>
                 </div>
             </div>
         @endif

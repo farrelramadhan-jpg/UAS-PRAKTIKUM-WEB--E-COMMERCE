@@ -31,7 +31,9 @@ class PublicProductController extends Controller
         if (!$product->is_active) {
             abort(404);
         }
-        $product->load('category');
+        $product->load(['category', 'comments' => function($query) {
+            $query->approved()->with('user')->latest();
+        }]);
         return view('products.show', compact('product'));
     }
 }

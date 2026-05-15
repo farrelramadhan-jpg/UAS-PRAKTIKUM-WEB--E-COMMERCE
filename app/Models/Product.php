@@ -34,4 +34,24 @@ class Product extends Model
     {
         return $this->hasMany(Wishlist::class);
     }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function approvedComments()
+    {
+        return $this->hasMany(Comment::class)->approved();
+    }
+
+    public function getAverageRatingAttribute(): float
+    {
+        return $this->approvedComments()->avg('rating') ?? 0;
+    }
+
+    public function getTotalReviewsAttribute(): int
+    {
+        return $this->approvedComments()->count();
+    }
 }

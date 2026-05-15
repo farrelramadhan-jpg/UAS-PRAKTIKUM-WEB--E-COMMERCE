@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             // Penambahan kolom role
-            $table->string('role')->default('guest'); // admin atau guest
+            $table->string('role')->default('buyer'); // admin, moderator, seller, atau buyer
             $table->rememberToken();
             $table->timestamps();
         });

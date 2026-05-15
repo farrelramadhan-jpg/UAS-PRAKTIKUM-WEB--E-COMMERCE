@@ -13,8 +13,18 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $customers = User::where('role', 'guest')->latest()->paginate(10);
-        return view('admin.customers.index', compact('customers'));
+        $customers = User::where('role', User::ROLE_BUYER)
+            ->withCount('orders')
+            ->withSum('orders', 'total_amount')
+            ->latest()
+            ->paginate(10);
+
+        $customersWithOrders = User::where('role', User::ROLE_BUYER)->has('orders')->count();
+        $activeThisMonth = User::where('role', User::ROLE_BUYER)
+            ->where('created_at', '>=', now()->startOfMonth())
+            ->count();
+
+        return view('admin.customers.index', compact('customers', 'customersWithOrders', 'activeThisMonth'));
     }
 
     /**
@@ -37,7 +47,7 @@ class CustomerController extends Controller
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
-        $validated['role'] = 'guest';
+        $validated['role'] = User::ROLE_BUYER;
 
         User::create($validated);
 
@@ -49,8 +59,8 @@ class CustomerController extends Controller
      */
     public function show(User $customer)
     {
-        // Ensure this is a customer (guest role)
-        if ($customer->role !== 'guest') {
+        // Ensure this is a customer (buyer role)
+        if ($customer->role !== User::ROLE_BUYER) {
             abort(404);
         }
 
@@ -63,8 +73,8 @@ class CustomerController extends Controller
      */
     public function edit(User $customer)
     {
-        // Ensure this is a customer (guest role)
-        if ($customer->role !== 'guest') {
+        // Ensure this is a customer (buyer role)
+        if ($customer->role !== User::ROLE_BUYER) {
             abort(404);
         }
 
@@ -76,8 +86,8 @@ class CustomerController extends Controller
      */
     public function update(Request $request, User $customer)
     {
-        // Ensure this is a customer (guest role)
-        if ($customer->role !== 'guest') {
+        // Ensure this is a customer (buyer role)
+        if ($customer->role !== User::ROLE_BUYER) {
             abort(404);
         }
 
@@ -103,8 +113,8 @@ class CustomerController extends Controller
      */
     public function destroy(User $customer)
     {
-        // Ensure this is a customer (guest role)
-        if ($customer->role !== 'guest') {
+        // Ensure this is a customer (buyer role)
+        if ($customer->role !== User::ROLE_BUYER) {
             abort(404);
         }
 

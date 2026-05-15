@@ -7,7 +7,11 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\ModeratorController;
+use App\Http\Controllers\ModeratorCommentController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\SettingController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,7 +23,19 @@ Route::get('/products/{product}', [PublicProductController::class, 'show'])->nam
 // Authenticated Routes
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
-        return redirect()->route('products.index');
+        if (auth()->user()->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+
+        if (auth()->user()->role === 'seller') {
+            return redirect()->route('seller.dashboard');
+        }
+
+        if (auth()->user()->role === 'moderator') {
+            return redirect()->route('moderator.dashboard');
+        }
+
+        return redirect()->route('products.public.index');
     })->name('dashboard');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -32,9 +48,36 @@ Route::middleware('auth')->group(function () {
     Route::put('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/{cart}', [CartController::class, 'destroy'])->name('cart.destroy');
 
-    // Wishlist Routes
-    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    // Comment routes
+    Route::resource('comments', CommentController::class)->only(['store', 'destroy']);
     Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+
+    // Checkout & customer orders
+    Route::get('/checkout', [CheckoutController::class, 'create'])->name('checkout.index');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/orders/{order}', [CheckoutController::class, 'show'])->name('orders.user.show');
+
+    // Seller routes
+    Route::prefix('seller')->middleware(['role:seller'])->name('seller.')->group(function () {
+        Route::get('/dashboard', function () {
+            return redirect()->route('seller.products.index');
+        })->name('dashboard');
+
+        Route::resource('products', ProductController::class);
+    });
+
+    // Moderator routes
+    Route::prefix('moderator')->middleware(['role:moderator'])->name('moderator.')->group(function () {
+        Route::get('/dashboard', [ModeratorController::class, 'index'])->name('dashboard');
+
+        // Comment management routes
+        Route::get('/comments', [ModeratorCommentController::class, 'index'])->name('comments.index');
+        Route::get('/comments/{comment}', [ModeratorCommentController::class, 'show'])->name('comments.show');
+        Route::post('/comments/{comment}/approve', [ModeratorCommentController::class, 'approve'])->name('comments.approve');
+        Route::post('/comments/{comment}/reject', [ModeratorCommentController::class, 'reject'])->name('comments.reject');
+        Route::delete('/comments/{comment}', [ModeratorCommentController::class, 'destroy'])->name('comments.destroy');
+        Route::post('/comments/bulk-action', [ModeratorCommentController::class, 'bulkAction'])->name('comments.bulk-action');
+    });
 
     // Admin routes
     Route::prefix('admin')->middleware(['role:admin'])->group(function () {

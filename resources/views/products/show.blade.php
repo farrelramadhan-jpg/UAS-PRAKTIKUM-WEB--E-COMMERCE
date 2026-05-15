@@ -54,16 +54,21 @@
                 </h1>
 
                 <!-- Rating & Reviews -->
+                @php
+                    $productRating = $product->average_rating ?: 0;
+                    $productReviews = $product->total_reviews;
+                    $roundedRating = round($productRating);
+                @endphp
                 <div class="flex items-center gap-4 mb-6 pb-6 border-b border-gray-200">
                     <div class="flex items-center gap-1">
-                        @for($i = 0; $i < 5; $i++)
-                            <i class="ph ph-star-fill text-lg text-yellow-400"></i>
+                        @for($i = 1; $i <= 5; $i++)
+                            <i class="ph ph-star-fill text-lg {{ $i <= $roundedRating ? 'text-yellow-400' : 'text-gray-300' }}"></i>
                         @endfor
                     </div>
-                    <span class="text-lg font-bold text-gray-900">4.8</span>
+                    <span class="text-lg font-bold text-gray-900">{{ number_format($productRating, 1) }}</span>
                     <span class="text-gray-600">dari 5</span>
                     <a href="#reviews" class="text-blue-600 hover:text-blue-700 font-semibold">
-                        (456 ulasan)
+                        ({{ $productReviews }} ulasan)
                     </a>
                 </div>
 
@@ -278,89 +283,151 @@
     </section>
 
     <!-- Reviews Section -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-gray-200 mt-8">
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-gray-200 mt-8" id="reviews">
         <h2 class="text-2xl font-bold text-gray-900 mb-8">Ulasan Pelanggan</h2>
 
+        @if(session('success'))
+            <div class="mb-6 rounded-lg border border-green-200 bg-green-50 p-4 text-green-900">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-red-900">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        <!-- Add Review Form (for authenticated users) -->
+        @auth
+            <div class="bg-gray-50 rounded-lg p-6 mb-8 border border-gray-200">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">Tulis Ulasan</h3>
+                <form action="{{ route('comments.store') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="product_id" value="{{ $product->id }}">
+
+                    <!-- Rating -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+                        <div class="flex items-center gap-1">
+                            @for($i = 1; $i <= 5; $i++)
+                                <input type="radio" name="rating" value="{{ $i }}" id="rating-{{ $i }}" class="sr-only peer" {{ $i === 5 ? 'checked' : '' }}>
+                                <label for="rating-{{ $i }}" class="cursor-pointer text-gray-300 hover:text-yellow-400 peer-checked:text-yellow-400">
+                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                </label>
+                            @endfor
+                        </div>
+                    </div>
+
+                    <!-- Comment -->
+                    <div class="mb-4">
+                        <label for="comment" class="block text-sm font-medium text-gray-700 mb-2">Ulasan Anda</label>
+                        <textarea name="comment" id="comment" rows="4" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" placeholder="Bagikan pengalaman Anda dengan produk ini..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium">
+                        Kirim Ulasan
+                    </button>
+                </form>
+            </div>
+        @else
+            <div class="bg-blue-50 rounded-lg p-6 mb-8 border border-blue-200">
+                <div class="text-center">
+                    <i class="ph ph-user-circle text-4xl text-blue-600 mb-2"></i>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Masuk untuk Memberikan Ulasan</h3>
+                    <p class="text-gray-600 mb-4">Anda perlu masuk ke akun Anda untuk memberikan ulasan pada produk ini.</p>
+                    <a href="{{ route('login') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium">
+                        Masuk
+                    </a>
+                </div>
+            </div>
+        @endauth
+
         <!-- Review Summary -->
+        @php
+            $activeReviewQuery = $product->comments()->approved();
+            $totalComments = (clone $activeReviewQuery)->count();
+            $averageRating = $totalComments > 0 ? (clone $activeReviewQuery)->avg('rating') : 0;
+            $ratingCounts = [];
+            for ($i = 1; $i <= 5; $i++) {
+                $ratingCounts[$i] = (clone $activeReviewQuery)->where('rating', $i)->count();
+            }
+        @endphp
+
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div class="bg-gray-50 rounded-lg p-6 text-center border border-gray-200">
-                <p class="text-4xl font-bold text-gray-900 mb-1">4.8</p>
+                <p class="text-4xl font-bold text-gray-900 mb-1">{{ number_format($averageRating, 1) }}</p>
                 <div class="flex justify-center mb-2">
-                    @for($i = 0; $i < 5; $i++)
-                        <i class="ph ph-star-fill text-yellow-400"></i>
+                    @for($i = 1; $i <= 5; $i++)
+                        <i class="ph ph-star-fill {{ $i <= round($averageRating) ? 'text-yellow-400' : 'text-gray-300' }}"></i>
                     @endfor
                 </div>
-                <p class="text-sm text-gray-600">Berdasarkan 456 ulasan</p>
+                <p class="text-sm text-gray-600">Berdasarkan {{ $totalComments }} ulasan</p>
             </div>
-            <div>
-                <div class="flex items-center gap-2 mb-2">
-                    <span class="text-sm text-gray-600">5 <i class="ph ph-star-fill text-yellow-400 text-xs"></i></span>
-                    <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div class="h-full bg-yellow-400" style="width: 70%"></div>
+
+            @for($i = 5; $i >= 1; $i--)
+                <div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-sm text-gray-600">{{ $i }} <i class="ph ph-star-fill text-yellow-400 text-xs"></i></span>
+                        <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div class="h-full bg-yellow-400" style="width: {{ $totalComments > 0 ? ($ratingCounts[$i] / $totalComments) * 100 : 0 }}%"></div>
+                        </div>
+                        <span class="text-sm text-gray-600">{{ $ratingCounts[$i] }}</span>
                     </div>
-                    <span class="text-sm text-gray-600">320</span>
                 </div>
-            </div>
-            <div>
-                <div class="flex items-center gap-2 mb-2">
-                    <span class="text-sm text-gray-600">4 <i class="ph ph-star-fill text-yellow-400 text-xs"></i></span>
-                    <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div class="h-full bg-yellow-400" style="width: 22%"></div>
-                    </div>
-                    <span class="text-sm text-gray-600">100</span>
-                </div>
-            </div>
-            <div>
-                <div class="flex items-center gap-2 mb-2">
-                    <span class="text-sm text-gray-600">3 <i class="ph ph-star-fill text-yellow-400 text-xs"></i></span>
-                    <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div class="h-full bg-yellow-400" style="width: 4%"></div>
-                    </div>
-                    <span class="text-sm text-gray-600">20</span>
-                </div>
-            </div>
+            @endfor
         </div>
 
         <!-- Reviews List -->
         <div class="space-y-6">
-            @foreach(range(1, 3) as $review)
+            @forelse($product->comments()->approved()->with('user')->latest()->get() as $comment)
                 <div class="border-b border-gray-200 pb-6">
                     <!-- Reviewer Info -->
                     <div class="flex items-start gap-4 mb-3">
-                        <div class="w-10 h-10 bg-gray-300 rounded-full"></div>
+                        <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                            <span class="text-gray-600 font-medium">{{ substr($comment->user->name, 0, 1) }}</span>
+                        </div>
                         <div class="flex-1">
                             <div class="flex items-center justify-between mb-1">
-                                <p class="font-semibold text-gray-900">Pembeli Terverifikasi</p>
-                                <span class="text-xs text-gray-500">2 hari yang lalu</span>
+                                <p class="font-semibold text-gray-900">{{ $comment->user->name }}</p>
+                                <span class="text-xs text-gray-500">{{ $comment->created_at->diffForHumans() }}</span>
                             </div>
                             <div class="flex items-center gap-2 mb-2">
-                                @for($i = 0; $i < 5; $i++)
-                                    <i class="ph ph-star-fill text-yellow-400 text-sm"></i>
+                                @for($star = 1; $star <= 5; $star++)
+                                    <i class="ph ph-star-fill {{ $star <= $comment->rating ? 'text-yellow-400' : 'text-gray-300' }} text-sm"></i>
                                 @endfor
-                                <span class="text-sm font-semibold text-gray-900">Sangat Memuaskan</span>
+                                <span class="text-sm font-semibold text-gray-900">
+                                    @if($comment->rating == 5) Sangat Memuaskan
+                                    @elseif($comment->rating == 4) Memuaskan
+                                    @elseif($comment->rating == 3) Cukup Baik
+                                    @elseif($comment->rating == 2) Kurang Memuaskan
+                                    @else Buruk
+                                    @endif
+                                </span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Review Content -->
-                    <p class="text-gray-700 mb-3">
-                        Produk ini benar-benar bagus! Kualitasnya sesuai dengan deskripsi dan harganya sangat terjangkau. 
-                        Pengiriman juga cepat dan packaging rapi. Saya sangat puas dan merekomendasikan produk ini kepada teman-teman.
-                    </p>
+                    <p class="text-gray-700 mb-3 whitespace-pre-wrap">{{ $comment->comment }}</p>
 
-                    <!-- Helpful -->
-                    <div class="flex items-center gap-4 text-sm">
-                        <button class="flex items-center gap-2 text-gray-600 hover:text-blue-600">
+                    <!-- Helpful Button -->
+                    <div class="flex items-center gap-4 text-sm text-gray-500">
+                        <button class="flex items-center gap-1 hover:text-blue-600">
                             <i class="ph ph-thumbs-up"></i>
-                            Membantu (12)
-                        </button>
-                        <button class="flex items-center gap-2 text-gray-600 hover:text-red-600">
-                            <i class="ph ph-thumbs-down"></i>
-                            Tidak Membantu (2)
+                            Bermanfaat (0)
                         </button>
                     </div>
                 </div>
-            @endforeach
+            @empty
+                <div class="text-center py-12">
+                    <i class="ph ph-chat-circle text-6xl text-gray-300 mb-4"></i>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Belum ada ulasan</h3>
+                    <p class="text-gray-600">Jadilah yang pertama memberikan ulasan untuk produk ini.</p>
+                </div>
+            @endforelse
         </div>
 
         <!-- Load More -->
