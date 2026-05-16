@@ -13,7 +13,7 @@
                 <p class="text-gray-600 text-sm mt-1">Kelola pengaturan umum aplikasi e-commerce</p>
             </div>
 
-            <form action="{{ route('settings.update') }}" method="POST" class="p-6 space-y-8">
+            <form action="{{ route('admin.settings.update') }}" method="POST" class="p-6 space-y-8">
                 @csrf
 
                 <!-- Site Information -->
