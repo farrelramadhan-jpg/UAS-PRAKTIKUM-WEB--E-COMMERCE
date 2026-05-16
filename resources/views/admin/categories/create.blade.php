@@ -6,7 +6,7 @@
     <div class="max-w-2xl">
         <div class="bg-white rounded-lg shadow">
             <div class="p-6">
-                <form action="{{ route('categories.store') }}" method="POST">
+                <form action="{{ route('admin.categories.store') }}" method="POST">
                     @csrf
 
                     <div class="mb-6">
@@ -40,7 +40,7 @@
                     </div>
 
                     <div class="flex gap-4">
-                        <a href="{{ route('categories.index') }}" class="flex-1 bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 font-semibold text-center transition">
+                        <a href="{{ route('admin.categories.index') }}" class="flex-1 bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 font-semibold text-center transition">
                             Batal
                         </a>
                         <button type="submit" class="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 font-semibold transition">

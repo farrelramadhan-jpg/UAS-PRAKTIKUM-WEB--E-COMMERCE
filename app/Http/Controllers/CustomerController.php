@@ -24,6 +24,10 @@ class CustomerController extends Controller
             ->where('created_at', '>=', now()->startOfMonth())
             ->count();
 
+        $route = request()->route() ? request()->route()->getName() : null;
+        if ($route && str_starts_with($route, 'seller.')) {
+            return view('seller.customers.index', compact('customers', 'customersWithOrders', 'activeThisMonth'));
+        }
         return view('admin.customers.index', compact('customers', 'customersWithOrders', 'activeThisMonth'));
     }
 
@@ -51,7 +55,8 @@ class CustomerController extends Controller
 
         User::create($validated);
 
-        return redirect()->route('customers.index')->with('success', 'Customer created successfully');
+        $indexRoute = $this->indexRouteName($request, 'customers');
+        return redirect()->route($indexRoute)->with('success', 'Customer created successfully');
     }
 
     /**
@@ -65,6 +70,10 @@ class CustomerController extends Controller
         }
 
         $customer->load('carts.product', 'wishlists.product', 'orders');
+        $route = request()->route() ? request()->route()->getName() : null;
+        if ($route && str_starts_with($route, 'seller.')) {
+            return view('seller.customers.show', compact('customer'));
+        }
         return view('admin.customers.show', compact('customer'));
     }
 
@@ -105,7 +114,8 @@ class CustomerController extends Controller
 
         $customer->update($validated);
 
-        return redirect()->route('customers.index')->with('success', 'Customer updated successfully');
+        $indexRoute = $this->indexRouteName($request, 'customers');
+        return redirect()->route($indexRoute)->with('success', 'Customer updated successfully');
     }
 
     /**
@@ -119,6 +129,19 @@ class CustomerController extends Controller
         }
 
         $customer->delete();
-        return redirect()->route('customers.index')->with('success', 'Customer deleted successfully');
+        $indexRoute = $this->indexRouteName(request(), 'customers');
+        return redirect()->route($indexRoute)->with('success', 'Customer deleted successfully');
+    }
+
+    protected function indexRouteName(Request $request, string $resource): string
+    {
+        $current = $request->route() ? $request->route()->getName() : null;
+        if ($current) {
+            $parts = explode('.', $current);
+            if (count($parts) >= 3) {
+                return $parts[0] . '.' . $resource . '.index';
+            }
+        }
+        return $resource . '.index';
     }
 }

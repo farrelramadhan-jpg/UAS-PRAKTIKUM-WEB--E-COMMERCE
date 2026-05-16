@@ -30,7 +30,7 @@ class CategoryController extends Controller
         // Gunakan variabel $validated, bukan $request->all() agar lebih aman
         Category::create($validated);
 
-        return redirect()->route('categories.index')->with('success', 'Kategori baru berhasil ditambahkan ke AnoShop!');
+        return redirect()->route('admin.categories.index')->with('success', 'Kategori baru berhasil ditambahkan ke AnoShop!');
     }
 
     public function show(Category $category)
@@ -52,13 +52,13 @@ class CategoryController extends Controller
 
         $category->update($validated);
 
-        return redirect()->route('categories.index')->with('success', 'Data kategori berhasil diperbarui!');
+        return redirect()->route('admin.categories.index')->with('success', 'Data kategori berhasil diperbarui!');
     }
 
     public function destroy(Category $category)
     {
         $category->delete();
 
-        return redirect()->route('categories.index')->with('success', 'Kategori berhasil dihapus dari sistem.');
+        return redirect()->route('admin.categories.index')->with('success', 'Kategori berhasil dihapus dari sistem.');
     }
 }

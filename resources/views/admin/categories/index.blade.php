@@ -12,7 +12,7 @@
                 </h1>
                 <p class="text-gray-600 text-sm mt-1">Kelola kategori produk di toko Anda</p>
             </div>
-            <a href="{{ route('categories.create') }}" class="flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 font-semibold">
+            <a href="{{ route('admin.categories.create') }}" class="flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 font-semibold">
                 <i class="ph ph-plus-circle"></i>
                 Tambah Kategori
             </a>
@@ -96,13 +96,13 @@
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-2">
-                                    <a href="{{ route('categories.show', $category->id) }}" class="text-blue-600 hover:text-blue-700 p-2 hover:bg-blue-50 rounded transition" title="Detail">
+                                    <a href="{{ route('admin.categories.show', $category->id) }}" class="text-blue-600 hover:text-blue-700 p-2 hover:bg-blue-50 rounded transition" title="Detail">
                                         <i class="ph ph-eye"></i>
                                     </a>
-                                    <a href="{{ route('categories.edit', $category->id) }}" class="text-orange-600 hover:text-orange-700 p-2 hover:bg-orange-50 rounded transition" title="Edit">
+                                    <a href="{{ route('admin.categories.edit', $category->id) }}" class="text-orange-600 hover:text-orange-700 p-2 hover:bg-orange-50 rounded transition" title="Edit">
                                         <i class="ph ph-pencil"></i>
                                     </a>
-                                    <form action="{{ route('categories.destroy', $category->id) }}" method="POST" class="inline">
+                                    <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" class="inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="text-red-600 hover:text-red-700 p-2 hover:bg-red-50 rounded transition" title="Hapus" onclick="return confirm('Yakin ingin menghapus kategori ini?')">
@@ -117,7 +117,7 @@
                             <td colspan="5" class="px-6 py-12 text-center text-gray-500">
                                 <i class="ph ph-list text-4xl mb-4 block"></i>
                                 <p>Belum ada kategori yang dibuat</p>
-                                <a href="{{ route('categories.create') }}" class="text-blue-600 hover:text-blue-700 mt-2 inline-block">Buat kategori pertama</a>
+                                <a href="{{ route('admin.categories.create') }}" class="text-blue-600 hover:text-blue-700 mt-2 inline-block">Buat kategori pertama</a>
                             </td>
                         </tr>
                     @endforelse

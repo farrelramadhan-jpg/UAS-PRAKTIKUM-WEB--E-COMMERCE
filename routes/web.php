@@ -89,7 +89,7 @@ Route::middleware('auth')->group(function () {
         })->name('dashboard');
         
         Route::get('/dashboard-main', function () {
-            return view('admin.dashboard');
+            return redirect()->route('admin.products.index');
         })->name('dashboard.main');
 
         Route::resource('products', ProductController::class);

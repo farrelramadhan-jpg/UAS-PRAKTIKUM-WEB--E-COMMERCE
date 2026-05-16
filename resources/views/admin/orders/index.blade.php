@@ -100,10 +100,10 @@
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-2">
-                                    <a href="{{ route('orders.show', $order->id) }}" class="text-blue-600 hover:text-blue-700 p-2 hover:bg-blue-50 rounded transition" title="Detail">
+                                    <a href="{{ route('admin.orders.show', $order->id) }}" class="text-blue-600 hover:text-blue-700 p-2 hover:bg-blue-50 rounded transition" title="Detail">
                                         <i class="ph ph-eye"></i>
                                     </a>
-                                    <a href="{{ route('orders.edit', $order->id) }}" class="text-orange-600 hover:text-orange-700 p-2 hover:bg-orange-50 rounded transition" title="Edit">
+                                    <a href="{{ route('admin.orders.edit', $order->id) }}" class="text-orange-600 hover:text-orange-700 p-2 hover:bg-orange-50 rounded transition" title="Edit">
                                         <i class="ph ph-pencil"></i>
                                     </a>
                                 </div>

@@ -34,29 +34,39 @@
 
                 <!-- Navigation -->
                 <nav class="p-6 space-y-2">
-                    <a href="/admin/dashboard" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition {{ request()->is('admin/dashboard') ? 'bg-blue-600' : '' }}">
+                    <a href="{{ route('products.public.index') }}" target="_blank" rel="noopener" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition">
                         <i class="ph ph-house text-xl"></i>
                         <span>Dashboard</span>
                     </a>
 
-                    <a href="{{ route('categories.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition {{ request()->is('admin/categories*') ? 'bg-blue-600' : '' }}">
+                    <a href="{{ route('admin.categories.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition {{ request()->routeIs('admin.categories*') ? 'bg-blue-600' : '' }}">
                         <i class="ph ph-list text-xl"></i>
                         <span>Kategori</span>
                     </a>
 
-                    <a href="{{ route('orders.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition {{ request()->is('admin/orders*') ? 'bg-blue-600' : '' }}">
+                    <a href="{{ route('admin.products.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition {{ request()->routeIs('admin.products*') ? 'bg-blue-600' : '' }}">
+                        <i class="ph ph-package text-xl"></i>
+                        <span>Produk</span>
+                    </a>
+
+                    <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition {{ request()->routeIs('admin.users*') ? 'bg-blue-600' : '' }}">
+                        <i class="ph ph-shield-check text-xl"></i>
+                        <span>Manajemen Pengguna</span>
+                    </a>
+
+                    <a href="{{ route('admin.orders.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition {{ request()->routeIs('admin.orders*') ? 'bg-blue-600' : '' }}">
                         <i class="ph ph-receipt text-xl"></i>
                         <span>Pesanan</span>
                     </a>
 
-                    <a href="{{ route('customers.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition {{ request()->is('admin/customers*') ? 'bg-blue-600' : '' }}">
+                    <a href="{{ route('admin.customers.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition {{ request()->routeIs('admin.customers*') ? 'bg-blue-600' : '' }}">
                         <i class="ph ph-users text-xl"></i>
                         <span>Pelanggan</span>
                     </a>
 
                     <div class="border-t border-gray-700 my-4"></div>
 
-                    <a href="{{ route('settings.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition {{ request()->is('admin/settings*') ? 'bg-blue-600' : '' }}">
+                    <a href="{{ route('admin.settings.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition {{ request()->routeIs('admin.settings*') ? 'bg-blue-600' : '' }}">
                         <i class="ph ph-gear text-xl"></i>
                         <span>Pengaturan</span>
                     </a>

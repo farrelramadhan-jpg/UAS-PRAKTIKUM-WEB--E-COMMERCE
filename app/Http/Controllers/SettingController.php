@@ -20,6 +20,11 @@ class SettingController extends Controller
             'maintenance_mode' => Cache::get('maintenance_mode', false),
         ];
 
+        $route = request()->route() ? request()->route()->getName() : null;
+        if ($route && str_starts_with($route, 'seller.')) {
+            return view('seller.settings.index', compact('settings'));
+        }
+
         return view('admin.settings.index', compact('settings'));
     }
 
@@ -41,6 +46,19 @@ class SettingController extends Controller
             Cache::forever($key, $value);
         }
 
-        return redirect()->route('settings.index')->with('success', 'Settings updated successfully');
+        $indexRoute = $this->indexRouteName($request, 'settings');
+        return redirect()->route($indexRoute)->with('success', 'Settings updated successfully');
+    }
+
+    protected function indexRouteName(Request $request, string $resource): string
+    {
+        $current = $request->route() ? $request->route()->getName() : null;
+        if ($current) {
+            $parts = explode('.', $current);
+            if (count($parts) >= 3) {
+                return $parts[0] . '.' . $resource . '.index';
+            }
+        }
+        return $resource . '.index';
     }
 }

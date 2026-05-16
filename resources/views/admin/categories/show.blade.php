@@ -18,10 +18,10 @@
                         </div>
                     </div>
                     <div class="flex gap-2">
-                        <a href="{{ route('categories.edit', $category->id) }}" class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 font-semibold transition">
+                        <a href="{{ route('admin.categories.edit', $category->id) }}" class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 font-semibold transition">
                             <i class="ph ph-pencil"></i> Edit
                         </a>
-                        <form action="{{ route('categories.destroy', $category->id) }}" method="POST" class="inline">
+                        <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" class="inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 font-semibold transition" onclick="return confirm('Yakin ingin menghapus kategori ini?')">
@@ -89,10 +89,10 @@
                                     </div>
                                 </div>
                                 <div class="mt-3 flex gap-2">
-                                    <a href="{{ route('products.show', $product->id) }}" class="flex-1 text-center text-blue-600 hover:text-blue-700 text-sm font-semibold py-2 px-3 border border-blue-600 rounded hover:bg-blue-50 transition">
+                                    <a href="{{ route('admin.products.show', $product->id) }}" class="flex-1 text-center text-blue-600 hover:text-blue-700 text-sm font-semibold py-2 px-3 border border-blue-600 rounded hover:bg-blue-50 transition">
                                         Detail
                                     </a>
-                                    <a href="{{ route('products.edit', $product->id) }}" class="flex-1 text-center text-orange-600 hover:text-orange-700 text-sm font-semibold py-2 px-3 border border-orange-600 rounded hover:bg-orange-50 transition">
+                                    <a href="{{ route('admin.products.edit', $product->id) }}" class="flex-1 text-center text-orange-600 hover:text-orange-700 text-sm font-semibold py-2 px-3 border border-orange-600 rounded hover:bg-orange-50 transition">
                                         Edit
                                     </a>
                                 </div>
@@ -104,7 +104,7 @@
                         <i class="ph ph-package text-4xl text-gray-400 mb-4"></i>
                         <h3 class="text-lg font-semibold text-gray-900 mb-2">Belum ada produk</h3>
                         <p class="text-gray-600 mb-4">Kategori ini belum memiliki produk apapun</p>
-                        <a href="{{ route('products.create') }}" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-semibold transition">
+                        <a href="{{ route('admin.products.create') }}" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-semibold transition">
                             Tambah Produk
                         </a>
                     </div>
@@ -113,7 +113,7 @@
         </div>
 
         <div class="mt-6">
-            <a href="{{ route('categories.index') }}" class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 font-semibold transition">
+            <a href="{{ route('admin.categories.index') }}" class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 font-semibold transition">
                 ← Kembali ke Daftar Kategori
             </a>
         </div>

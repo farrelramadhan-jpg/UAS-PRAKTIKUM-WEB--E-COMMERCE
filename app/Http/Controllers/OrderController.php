@@ -13,6 +13,10 @@ class OrderController extends Controller
     public function index()
     {
         $orders = Order::with('user')->latest()->paginate(10);
+        $route = request()->route() ? request()->route()->getName() : null;
+        if ($route && str_starts_with($route, 'seller.')) {
+            return view('seller.orders.index', compact('orders'));
+        }
         return view('admin.orders.index', compact('orders'));
     }
 
@@ -31,7 +35,8 @@ class OrderController extends Controller
     {
         // This would typically be handled by the checkout process
         // For admin, we might allow manual order creation
-        return redirect()->route('orders.index')->with('success', 'Order created successfully');
+        $indexRoute = $this->indexRouteName($request, 'orders');
+        return redirect()->route($indexRoute)->with('success', 'Order created successfully');
     }
 
     /**
@@ -40,6 +45,10 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         $order->load('user', 'orderItems.product');
+        $route = request()->route() ? request()->route()->getName() : null;
+        if ($route && str_starts_with($route, 'seller.')) {
+            return view('seller.orders.show', compact('order'));
+        }
         return view('admin.orders.show', compact('order'));
     }
 
@@ -64,7 +73,8 @@ class OrderController extends Controller
 
         $order->update($validated);
 
-        return redirect()->route('orders.index')->with('success', 'Order updated successfully');
+        $indexRoute = $this->indexRouteName($request, 'orders');
+        return redirect()->route($indexRoute)->with('success', 'Order updated successfully');
     }
 
     /**
@@ -73,6 +83,19 @@ class OrderController extends Controller
     public function destroy(Order $order)
     {
         $order->delete();
-        return redirect()->route('orders.index')->with('success', 'Order deleted successfully');
+        $indexRoute = $this->indexRouteName($request, 'orders');
+        return redirect()->route($indexRoute)->with('success', 'Order deleted successfully');
+    }
+
+    protected function indexRouteName(Request $request, string $resource): string
+    {
+        $current = $request->route() ? $request->route()->getName() : null;
+        if ($current) {
+            $parts = explode('.', $current);
+            if (count($parts) >= 3) {
+                return $parts[0] . '.' . $resource . '.index' ?? $resource . '.index';
+            }
+        }
+        return $resource . '.index';
     }
 }

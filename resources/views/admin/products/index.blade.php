@@ -12,7 +12,7 @@
                 </h1>
                 <p class="text-gray-600 text-sm mt-1">Kelola dan pantau semua produk di toko Anda</p>
             </div>
-            <a href="{{ route('products.create') }}" class="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-semibold">
+            <a href="{{ route('admin.products.create') }}" class="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-semibold">
                 <i class="ph ph-plus-circle"></i>
                 Tambah Produk
             </a>
@@ -169,13 +169,13 @@
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-2">
-                                    <a href="{{ route('products.show', $product->id) }}" class="text-blue-600 hover:text-blue-700 p-2 hover:bg-blue-50 rounded transition" title="Detail">
+                                    <a href="{{ route('admin.products.show', $product->id) }}" class="text-blue-600 hover:text-blue-700 p-2 hover:bg-blue-50 rounded transition" title="Detail">
                                         <i class="ph ph-eye"></i>
                                     </a>
-                                    <a href="{{ route('products.edit', $product->id) }}" class="text-orange-600 hover:text-orange-700 p-2 hover:bg-orange-50 rounded transition" title="Edit">
+                                    <a href="{{ route('admin.products.edit', $product->id) }}" class="text-orange-600 hover:text-orange-700 p-2 hover:bg-orange-50 rounded transition" title="Edit">
                                         <i class="ph ph-pencil"></i>
                                     </a>
-                                    <form action="{{ route('products.destroy', $product->id) }}" method="POST" class="inline">
+                                    <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" class="inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="text-red-600 hover:text-red-700 p-2 hover:bg-red-50 rounded transition" title="Hapus" onclick="return confirm('Yakin ingin menghapus produk ini?')">

@@ -12,12 +12,20 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::with('category')->latest()->paginate(10);
+        $route = request()->route() ? request()->route()->getName() : null;
+        if ($route && str_starts_with($route, 'seller.')) {
+            return view('seller.products.index', compact('products'));
+        }
         return view('admin.products.index', compact('products'));
     }
 
     public function create()
     {
         $categories = Category::all();
+        $route = request()->route() ? request()->route()->getName() : null;
+        if ($route && str_starts_with($route, 'seller.')) {
+            return view('seller.products.create', compact('categories'));
+        }
         return view('admin.products.create', compact('categories'));
     }
 
@@ -57,13 +65,17 @@ class ProductController extends Controller
 
         Product::create($validated);
 
-        return redirect()->route('products.index')->with('success', 'Produk berhasil ditambahkan!');
+        $indexRoute = $this->productsIndexRouteName($request);
+        return redirect()->route($indexRoute)->with('success', 'Produk berhasil ditambahkan!');
     }
 
     public function show(Product $product)
     {
         $product->load('category');
-        // Fallback to basic view if admin view doesn't exist for show
+        $route = request()->route() ? request()->route()->getName() : null;
+        if ($route && str_starts_with($route, 'seller.')) {
+            return view('seller.products.show', compact('product'));
+        }
         if (view()->exists('admin.products.show')) {
             return view('admin.products.show', compact('product'));
         }
@@ -73,6 +85,10 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $categories = Category::all();
+        $route = request()->route() ? request()->route()->getName() : null;
+        if ($route && str_starts_with($route, 'seller.')) {
+            return view('seller.products.edit', compact('product', 'categories'));
+        }
         return view('admin.products.edit', compact('product', 'categories'));
     }
 
@@ -120,7 +136,8 @@ class ProductController extends Controller
 
         $product->update($validated);
 
-        return redirect()->route('products.index')->with('success', 'Data produk berhasil diperbarui!');
+        $indexRoute = $this->productsIndexRouteName($request);
+        return redirect()->route($indexRoute)->with('success', 'Data produk berhasil diperbarui!');
     }
 
     public function destroy(Product $product)
@@ -134,7 +151,24 @@ class ProductController extends Controller
             }
         }
         $product->delete();
-        
-        return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus.');
+
+        $indexRoute = $this->productsIndexRouteName($request);
+        return redirect()->route($indexRoute)->with('success', 'Produk berhasil dihapus.');
+    }
+
+    /**
+     * Determine the correct named index route for products based on current route name.
+     */
+    protected function productsIndexRouteName(Request $request): string
+    {
+        $current = $request->route() ? $request->route()->getName() : null;
+        if ($current) {
+            $parts = explode('.', $current);
+            // if route name contains a prefix like 'seller.products.store' or 'admin.products.update'
+            if (count($parts) >= 3) {
+                return $parts[0] . '.products.index';
+            }
+        }
+        return 'products.index';
     }
 }
