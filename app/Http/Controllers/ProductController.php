@@ -45,23 +45,9 @@ class ProductController extends Controller
             'width'       => 'nullable|numeric|min:0',
             'height'      => 'nullable|numeric|min:0',
             'is_active'   => 'nullable|boolean',
-            'main_image'  => 'nullable|image|max:2048',
-            'gallery_images.*' => 'nullable|image|max:2048',
         ]);
 
-        if ($request->hasFile('main_image')) {
-            $validated['main_image'] = $request->file('main_image')->store('products', 'public');
-        }
-
-        if ($request->hasFile('gallery_images')) {
-            $gallery = [];
-            foreach ($request->file('gallery_images') as $image) {
-                $gallery[] = $image->store('products', 'public');
-            }
-            $validated['gallery_images'] = $gallery;
-        }
-
-        $validated['is_active'] = $request->has('is_active') ? $request->is_active : false;
+        $validated['is_active'] = $request->is_active == '1';
 
         Product::create($validated);
 
@@ -108,31 +94,9 @@ class ProductController extends Controller
             'width'       => 'nullable|numeric|min:0',
             'height'      => 'nullable|numeric|min:0',
             'is_active'   => 'nullable|boolean',
-            'main_image'  => 'nullable|image|max:2048',
-            'gallery_images.*' => 'nullable|image|max:2048',
         ]);
 
-        if ($request->hasFile('main_image')) {
-            if ($product->main_image) {
-                Storage::disk('public')->delete($product->main_image);
-            }
-            $validated['main_image'] = $request->file('main_image')->store('products', 'public');
-        }
-
-        if ($request->hasFile('gallery_images')) {
-            if ($product->gallery_images) {
-                foreach ($product->gallery_images as $oldImage) {
-                    Storage::disk('public')->delete($oldImage);
-                }
-            }
-            $gallery = [];
-            foreach ($request->file('gallery_images') as $image) {
-                $gallery[] = $image->store('products', 'public');
-            }
-            $validated['gallery_images'] = $gallery;
-        }
-
-        $validated['is_active'] = $request->has('is_active') ? $request->is_active : false;
+        $validated['is_active'] = $request->is_active == '1';
 
         $product->update($validated);
 
@@ -142,14 +106,6 @@ class ProductController extends Controller
 
     public function destroy(Request $request, Product $product)
     {
-        if ($product->main_image) {
-            Storage::disk('public')->delete($product->main_image);
-        }
-        if ($product->gallery_images) {
-            foreach ($product->gallery_images as $image) {
-                Storage::disk('public')->delete($image);
-            }
-        }
         $product->delete();
 
         $indexRoute = $this->productsIndexRouteName($request);
