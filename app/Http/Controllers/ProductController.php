@@ -140,7 +140,7 @@ class ProductController extends Controller
         return redirect()->route($indexRoute)->with('success', 'Data produk berhasil diperbarui!');
     }
 
-    public function destroy(Product $product)
+    public function destroy(Request $request, Product $product)
     {
         if ($product->main_image) {
             Storage::disk('public')->delete($product->main_image);
