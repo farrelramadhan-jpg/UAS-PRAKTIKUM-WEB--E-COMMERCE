@@ -69,6 +69,10 @@ class CheckoutController extends Controller
             ]);
 
             foreach ($carts as $cart) {
+                if ($cart->product->stock < $cart->quantity) {
+                    throw new \Exception("Stok produk {$cart->product->name} tidak mencukupi.");
+                }
+
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $cart->product->id,
@@ -78,6 +82,8 @@ class CheckoutController extends Controller
                     'unit_price' => $cart->product->price,
                     'total_price' => $cart->product->price * $cart->quantity,
                 ]);
+
+                $cart->product->decrement('stock', $cart->quantity);
             }
 
             Cart::where('user_id', $user->id)->delete();

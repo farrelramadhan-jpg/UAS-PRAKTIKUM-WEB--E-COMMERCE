@@ -26,10 +26,14 @@
                 </h1>
                 <p class="text-gray-600 text-sm mt-1">Kelola dan pantau semua produk di toko Anda</p>
             </div>
-            <a href="{{ route('admin.products.create') }}" class="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-semibold">
-                <i class="ph ph-plus-circle"></i>
-                Tambah Produk
-            </a>
+    <div class="flex items-center space-x-2">
+        <a href="{{ route('admin.insight.index') }}" class="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-md ...">
+        💡 AI Insight Dead Stock
+        </a>
+        <a href="{{ route('admin.products.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md ...">
+        Tambah Produk
+        </a>
+</div>
         </div>
 
         <!-- Stats -->
