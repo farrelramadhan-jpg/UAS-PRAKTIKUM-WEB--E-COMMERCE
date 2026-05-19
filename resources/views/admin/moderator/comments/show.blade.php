@@ -206,7 +206,7 @@ document.getElementById('reject-modal').addEventListener('click', function(e) {
 @if(session('success'))
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            alert('{{ session('success') }}');
+            alert('{{ session("success") }}');
         });
     </script>
 @endif

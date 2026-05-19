@@ -162,7 +162,7 @@
                                     </button>
                                 </form>
 
-                                <button onclick="rejectComment({{ $comment->id }})" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm">
+                                <button onclick="rejectComment('{{ $comment->id }}')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm">
                                     Tolak
                                 </button>
                             @endif
@@ -259,7 +259,7 @@ document.getElementById('reject-modal').addEventListener('click', function(e) {
 @if(session('success'))
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            alert('{{ session('success') }}');
+            alert('{{ session("success") }}');
         });
     </script>
 @endif
