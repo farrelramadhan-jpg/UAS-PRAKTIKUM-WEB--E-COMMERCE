@@ -28,6 +28,12 @@ class CartController extends Controller
                     ->where('product_id', $product->id)
                     ->first();
 
+        $currentCartQty = $cart ? $cart->quantity : 0;
+
+        if (($currentCartQty + $qty) > $product->stock) {
+            return back()->with('error', 'Gagal menambahkan ke keranjang. Stok tersisa hanya: ' . $product->stock);
+        }
+
         if ($cart) {
             $cart->update([
                 'quantity' => $cart->quantity + $qty
@@ -48,6 +54,10 @@ class CartController extends Controller
         if ($cart->user_id !== auth()->id()) abort(403);
 
         $request->validate(['quantity' => 'required|integer|min:1']);
+
+        if ($request->quantity > $cart->product->stock) {
+            return back()->with('error', 'Gagal memperbarui keranjang. Stok tersisa hanya: ' . $cart->product->stock);
+        }
         
         $cart->update(['quantity' => $request->quantity]);
         return back()->with('success', 'Jumlah keranjang diperbarui!');

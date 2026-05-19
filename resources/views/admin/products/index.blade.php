@@ -3,6 +3,20 @@
         Kelola Produk
     </x-slot>
 
+    @if(session('success'))
+        <div class="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-xl flex items-center gap-3 shadow-sm">
+            <i class="ph ph-check-circle text-xl"></i>
+            <span class="text-sm font-semibold">{{ session('success') }}</span>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl flex items-center gap-3 shadow-sm">
+            <i class="ph ph-warning-circle text-xl"></i>
+            <span class="text-sm font-semibold">{{ session('error') }}</span>
+        </div>
+    @endif
+
     <div class="mb-6">
         <div class="flex justify-between items-center mb-6">
             <div>
@@ -12,10 +26,14 @@
                 </h1>
                 <p class="text-gray-600 text-sm mt-1">Kelola dan pantau semua produk di toko Anda</p>
             </div>
-            <a href="{{ route('admin.products.create') }}" class="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-semibold">
-                <i class="ph ph-plus-circle"></i>
-                Tambah Produk
-            </a>
+    <div class="flex items-center space-x-2">
+        <a href="{{ route('admin.insight.index') }}" class="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-md ...">
+        💡 AI Insight Dead Stock
+        </a>
+        <a href="{{ route('admin.products.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md ...">
+        Tambah Produk
+        </a>
+</div>
         </div>
 
         <!-- Stats -->

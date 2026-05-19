@@ -52,6 +52,7 @@ Route::middleware('auth')->group(function () {
 
     // Comment routes
     Route::resource('comments', CommentController::class)->only(['store', 'destroy']);
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
     Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
 
     // Checkout & customer orders
@@ -100,6 +101,7 @@ Route::middleware('auth')->group(function () {
         Route::patch('/users/{user}/role', [UserManagementController::class, 'updateRole'])->name('users.updateRole');
         Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
         Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
+        Route::get('/insight', [\App\Http\Controllers\InsightController::class, 'index'])->name('insight.index');
     });
 });
 
