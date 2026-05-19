@@ -45,6 +45,9 @@ class DatabaseSeeder extends Seeder
             'role' => 'buyer',
         ]);
 
+        // Ensure admin seeder runs to set known admin password
+        $this->call(AdminUserSeeder::class);
+
         $categories = [
             ['name' => 'Fashion Pria', 'description' => 'Pakaian dan aksesoris pria terbaru'],
             ['name' => 'Fashion Wanita', 'description' => 'Pakaian dan aksesoris wanita terbaru'],

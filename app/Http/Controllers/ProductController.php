@@ -4,19 +4,41 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::with('category')->latest()->paginate(10);
+        $products = Product::with('category')
+            ->withSum('orderItems', 'quantity')
+            ->latest()
+            ->paginate(10);
+
+        // Stats for dashboard cards
+        $totalProducts = Product::count();
+        $lowStockCount = Product::where(function($q) {
+            $q->whereColumn('stock', '<', 'min_stock')
+              ->orWhere(function($q2) {
+                  $q2->whereNull('min_stock')->where('stock', '<', 10);
+              });
+        })->count();
+
+        $inactiveCount = Product::where('is_active', false)->count();
+
+        $soldToday = OrderItem::whereHas('order', function($q) {
+            $q->whereDate('created_at', Carbon::today());
+        })->sum('quantity');
+
         $route = request()->route() ? request()->route()->getName() : null;
         if ($route && str_starts_with($route, 'seller.')) {
-            return view('seller.products.index', compact('products'));
+            return view('seller.products.index', compact('products', 'totalProducts', 'lowStockCount', 'inactiveCount', 'soldToday'));
         }
-        return view('admin.products.index', compact('products'));
+        return view('admin.products.index', compact('products', 'totalProducts', 'lowStockCount', 'inactiveCount', 'soldToday'));
     }
 
     public function create()

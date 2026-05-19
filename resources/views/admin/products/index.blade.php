@@ -42,7 +42,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-600 text-sm">Total Produk</p>
-                        <p class="text-2xl font-bold text-gray-900">1,234</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ number_format($totalProducts) }}</p>
                     </div>
                     <i class="ph ph-package text-4xl text-blue-600 opacity-20"></i>
                 </div>
@@ -51,7 +51,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-600 text-sm">Stok Rendah</p>
-                        <p class="text-2xl font-bold text-gray-900">12</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ $lowStockCount }}</p>
                     </div>
                     <i class="ph ph-warning-circle text-4xl text-green-600 opacity-20"></i>
                 </div>
@@ -60,7 +60,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-600 text-sm">Terjual Hari Ini</p>
-                        <p class="text-2xl font-bold text-gray-900">45</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ $soldToday }}</p>
                     </div>
                     <i class="ph ph-chart-line text-4xl text-orange-600 opacity-20"></i>
                 </div>
@@ -69,7 +69,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-600 text-sm">Tidak Aktif</p>
-                        <p class="text-2xl font-bold text-gray-900">8</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ $inactiveCount }}</p>
                     </div>
                     <i class="ph ph-x-circle text-4xl text-red-600 opacity-20"></i>
                 </div>
@@ -172,7 +172,7 @@
                                 <span class="{{ $stokClass }} font-semibold">{{ $product->stock }} pcs</span>
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-700">
-                                0 pcs
+                                {{ ($product->order_items_sum_quantity ?? 0) }} pcs
                             </td>
                             <td class="px-6 py-4">
                                 @if($product->is_active)

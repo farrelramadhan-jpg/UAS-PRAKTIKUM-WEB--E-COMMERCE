@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Auth;
 use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -42,7 +42,7 @@ class ModeratorCommentController extends Controller
         $comment->update([
             'status' => 'approved',
             'approved_at' => now(),
-            'approved_by' => auth()->id(),
+            'approved_by' => Auth::id(),
         ]);
 
         return redirect()->route('moderator.comments.index')
@@ -58,7 +58,7 @@ class ModeratorCommentController extends Controller
         $comment->update([
             'status' => 'rejected',
             'approved_at' => now(),
-            'approved_by' => auth()->id(),
+            'approved_by' => Auth::id(),
         ]);
 
         return redirect()->route('moderator.comments.index')
@@ -82,6 +82,7 @@ class ModeratorCommentController extends Controller
         ]);
 
         $comments = Comment::whereIn('id', $request->comment_ids)->get();
+        $message = '';
 
         switch ($request->action) {
             case 'approve':
@@ -89,7 +90,7 @@ class ModeratorCommentController extends Controller
                     $comment->update([
                         'status' => 'approved',
                         'approved_at' => now(),
-                        'approved_by' => auth()->id(),
+                        'approved_by' => Auth::id(),
                     ]);
                 }
                 $message = 'Ulasan berhasil disetujui.';
@@ -100,7 +101,7 @@ class ModeratorCommentController extends Controller
                     $comment->update([
                         'status' => 'rejected',
                         'approved_at' => now(),
-                        'approved_by' => auth()->id(),
+                        'approved_by' => Auth::id(),
                     ]);
                 }
                 $message = 'Ulasan berhasil ditolak.';
