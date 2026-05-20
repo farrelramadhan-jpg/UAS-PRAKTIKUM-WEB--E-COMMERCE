@@ -124,8 +124,8 @@
                                 <h3 class="text-lg font-medium text-gray-900">
                                     {{ $comment->user->name }}
                                 </h3>
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $comment->getStatusColor() }}">
-                                    {{ $comment->getStatusText() }}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-{{ $comment->status_color }}-100 text-{{ $comment->status_color }}-800">
+                                {{ $comment->status_text }}
                                 </span>
                                 @if($comment->rating)
                                     <div class="flex items-center">

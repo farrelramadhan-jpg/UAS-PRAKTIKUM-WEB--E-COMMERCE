@@ -21,9 +21,9 @@
                         <div class="bg-gray-50 rounded-lg p-4 space-y-3">
                             <div class="flex justify-between">
                                 <span class="text-sm font-medium text-gray-500">Status:</span>
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $comment->getStatusColor() }}">
-                                    {{ $comment->getStatusText() }}
-                                </span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-{{ $comment->status_color }}-100 text-{{ $comment->status_color }}-800">
+                                {{ $comment->status_text }}
+                                </span> 
                             </div>
 
                             @if($comment->rating)
